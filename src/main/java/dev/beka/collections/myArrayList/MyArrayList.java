@@ -26,6 +26,7 @@ public class MyArrayList <T> implements List<T>{
         capacity = data.length;
     }
 
+
     //--------------
     //helper methods
     //--------------
@@ -48,6 +49,7 @@ public class MyArrayList <T> implements List<T>{
         data = Arrays.copyOf(data, capacity);
     }
 
+
     //dose not allows size == index
     private void indexCheckElement(int index){
         if (index > size || index < 0) {
@@ -62,6 +64,10 @@ public class MyArrayList <T> implements List<T>{
         }
     }
 
+
+    //------------------------------
+    //implementing ArrayList Methods
+    //------------------------------
     @Override
     public int size() {
         return size;
@@ -256,7 +262,6 @@ public class MyArrayList <T> implements List<T>{
         return true;
     }
 
-    //under development
     @Override
     public boolean retainAll(Collection<?> c) {
         if (c == null){
@@ -264,37 +269,34 @@ public class MyArrayList <T> implements List<T>{
         }
 
         if(c.isEmpty()) {
-            return false;
+            boolean isDataEmpty = isEmpty();
+            clear();
+            return !isDataEmpty;
         }
 
-            HashSet<?> myHash = new HashSet<>(c);
-            int shift = 0;
+        HashSet<?> myHash = new HashSet<>(c);
+        int shift = 0;
 
-            for(int i = 0; i < size; i++){
+        for(int i = 0; i < size; i++){
 
-                //match found increase shift++
-                if(myHash.contains(data[i])){
-                    shift++;
-
-                }
-
-                //match not found override elements at [i - shift] with current element [i]
-                else{
-                    data[i - shift] = data[i];
-
-                }
+            //match not found override elements at [i - shift] with current element [i]
+            if(myHash.contains(data[i])){
+                data[i - shift] = data[i];
             }
 
-
-            for (int i = size - shift; i < size; i++){
-                data[i] = null;
+            //match found increase shift++
+            else{
+                shift++;
             }
-
-            if(shift == 0){return false;}
-
-            size = size - shift;
-            return true;
         }
+
+        for (int i = size - shift; i < size; i++){
+            data[i] = null;
+        }
+
+        size = size - shift;
+        return true;
+    }
 
     @Override
     public int indexOf(Object o) {
