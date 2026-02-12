@@ -279,12 +279,12 @@ public class MyArrayList <T> implements List<T>{
 
         for(int i = 0; i < size; i++){
 
-            //match not found override elements at [i - shift] with current element [i]
+            //match found override elements at [i - shift] with current element [i]
             if(myHash.contains(data[i])){
                 data[i - shift] = data[i];
             }
 
-            //match found increase shift++
+            //match not found increase shift++
             else{
                 shift++;
             }
