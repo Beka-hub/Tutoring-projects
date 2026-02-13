@@ -22,13 +22,14 @@ public class MyLinkedLIst <T> implements List<T>, Deque<T>{
     //helper methods
     //--------------
     private void indexCheckElement(int index) {
-        if (index < 0 || index > size) {
+        if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         }
     }
 
+    //index == size add(index)
     private void indexCheckPosition(int index) {
-        if (index < 0 || index >= size) {
+        if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
         }
     }
@@ -62,7 +63,7 @@ public class MyLinkedLIst <T> implements List<T>, Deque<T>{
     }
 
     @Override
-    public boolean isEmpty() {
+    public boolean  isEmpty() {
         return size == 0;
     }
 
@@ -298,6 +299,51 @@ public class MyLinkedLIst <T> implements List<T>, Deque<T>{
 
     @Override
     public boolean remove(Object o) {
+        //make sure list is not empty
+        if(isEmpty() || o == null){
+            return false;
+        }
+
+        Node<T> current = head;
+
+        for(int i = 0; i < size; i++){
+            //equals() ==
+
+            if(current.data != null && current.data.equals(o)) {
+
+                //one element
+                if (size == 1) {
+                    head = null;
+                    tail = null;
+
+                    size--;
+                    return true;
+                }
+
+                //remove head
+                if (current == head) {
+                    head = head.next;
+                    head.previous = null;
+                    size--;
+                    return true;
+                }
+
+                //remove tail
+                if (current == tail) {
+                    tail = tail.previous;
+                    tail.next = null;
+
+                    size--;
+                    return data;
+                }
+
+                //remove middle
+                current.previous.next = current.next;
+                current.next.previous = current.previous;
+            }
+
+            current = current.next;
+        }
         return false;
     }
 
@@ -352,10 +398,11 @@ public class MyLinkedLIst <T> implements List<T>, Deque<T>{
             addLast(element);
             return;
         }
-
-        Node<T> nodeAtIndex = getNode(index);
+        //at this index==size
+        Node<T> nodeAtIndex = getNode(index); // fixme exception
         Node<T> newNode = new Node<>(element);
 
+        //{prev: node :next}
         newNode.previous = nodeAtIndex.previous;
         newNode.next = nodeAtIndex;
 
@@ -388,7 +435,7 @@ public class MyLinkedLIst <T> implements List<T>, Deque<T>{
             head = node.next;
             head.previous = null;
 
-            node.next = null;
+            node.next = null; // redundant but ok
             size--;
             return data;
         }
@@ -398,7 +445,7 @@ public class MyLinkedLIst <T> implements List<T>, Deque<T>{
             tail = node.previous;
             tail.next = null;
 
-            node.previous = null;
+            node.previous = null; // redundant but ok
             size--;
             return data;
         }
@@ -407,8 +454,8 @@ public class MyLinkedLIst <T> implements List<T>, Deque<T>{
         node.previous.next = node.next;
         node.next.previous = node.previous;
 
-        node.next = null;
-        node.previous = null;
+        node.next = null; // redundant but ok
+        node.previous = null; // redundant but ok
 
         size--;
         return data;
