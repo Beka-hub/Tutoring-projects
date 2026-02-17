@@ -1,4 +1,4 @@
-package dev.beka.collections.myLinkedList;
+package dev.beka.collections.list.myLinkedList;
 import java.util.*;
 
 public class MyLinkedLIst <T> implements List<T>, Deque<T>{

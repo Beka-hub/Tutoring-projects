@@ -1,4 +1,4 @@
-package dev.beka.collections.myArrayList;
+package dev.beka.collections.list.myArrayList;
 import java.util.*;
 
 public class MyArrayList <T> implements List<T>{
