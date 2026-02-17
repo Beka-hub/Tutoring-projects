@@ -334,7 +334,7 @@ public class MyLinkedLIst <T> implements List<T>, Deque<T>{
                     tail.next = null;
 
                     size--;
-                    return data;
+                    return true;
                 }
 
                 //remove middle
