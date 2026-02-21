@@ -86,32 +86,30 @@ public class MyHashSet<E> implements Set<E> {
     public boolean remove(Object o) {
 
         int index = findIndex(o);
-        LinkedList<E> bucket = table[index];
 
-        if (bucket == null) {
+        if(table[index] == null ){
             return false;
         }
 
-        Iterator<E> it = bucket.iterator();
+        Iterator<E> itr = table[index].iterator();
 
-        while (it.hasNext()) {
-            E element = it.next();
+        while(itr.hasNext()) {
 
+            //check for existing elements
             // case 1: both null
-            if (o == null && element == null) {
-                it.remove();
+            if (o == null && itr.next() == null) {
+                itr.remove();
                 size--;
                 return true;
             }
 
-            // case 2: both non-null and equal
-            if (o != null && o.equals(element)) {
-                    it.remove();
-                    size--;
-                    return true;
-                }
+            // case 2: o non-null and equal
+            if (o != null && o.equals(itr.next())) {
+                itr.remove();
+                size--;
+                return true;
             }
-
+        }
         return false;
     }
 
@@ -121,25 +119,28 @@ public class MyHashSet<E> implements Set<E> {
         return false;
     }
 
-    // check for null buckets first
+
     @Override
     public boolean contains(Object o) {
-        int hashCode = 0;
+        int index = findIndex(o);
 
-        //null always be at index 0;
-        // null != null -> hashCode = 0;
-        // e != null -> e.hashCode();
-        if (o != null){
-            hashCode = o.hashCode();
+        if(table[index] == null ){
+            return false;
         }
 
-        int index = hashCode % length;
+        for (E element : table[index]) {
 
-        //check for existing elements
-        if (table[index].contains(o)) {
-            return true;
+            //check for existing elements
+            // case 1: both null
+            if (o == null && element == null) {
+                return true;
+            }
+
+            // case 2: o non-null and equal
+            if (o != null && o.equals(element)) {
+                return true;
+            }
         }
-
         return false;
     }
 
@@ -148,14 +149,12 @@ public class MyHashSet<E> implements Set<E> {
         return false;
     }
 
-    //removes the buckets
-    //i initialize bucets in constractor so
-    // if after clear() we call add(e) it will throw NullPointerEcxeption
     @Override
     public void clear() {
         for(int i = 0; i < length; i++){
             table[i] = null; // drope the buckets
         }
+
         size = 0;
     }
 
