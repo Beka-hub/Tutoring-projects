@@ -33,37 +33,28 @@ public class MyHashSet<E> implements Set<E> {
         return index;
     }
 
-    private void initializeBuckets(int index){
+    private void initializeBucket(int index){
         table[index] = new LinkedList<>();
     }
 
-    // here should be a method that expends array based on LoadFactor
-    //expand();
+    private void expand(){
+        LinkedList<E>[] temporaryTable = table;
 
-    @Override
-    public boolean add(E e) {
+        //new table
+        length = length * 2;
+        size = 0;
+        table = new LinkedList[length * 2];
 
-        if (size >= table.length * LOAD_FACTOR) {
-            //expand();
+
+        //check buckets
+        for(LinkedList<E> list : temporaryTable){
+
+            if(list != null){
+                for(E e : list){
+                    add(e);
+                }
+            }
         }
-
-        int index = findIndex(e);
-
-
-        //initialize table[index] as needed
-        if(table[index] == null){
-            initializeBuckets(index);
-        }
-
-        //check for existing elements
-        if (table[index].contains(e)) {
-            return false;
-        }
-
-        table[index].add(e);
-
-        size++;
-        return true;
     }
 
 
@@ -78,8 +69,48 @@ public class MyHashSet<E> implements Set<E> {
     }
 
     @Override
+    public boolean add(E e) {
+
+
+        int index = findIndex(e);
+
+        //initialize table[index] with buckets as needed
+        if(table[index] == null){
+            initializeBucket(index);
+        }
+
+        //check for existing elements
+        for (E element : table[index]) {
+            if(e == null && element == null){
+                return false;
+            }
+
+            if (e != null && e.equals(element)) {
+                return false;
+            }
+        }
+
+        table[index].add(e);
+        size++;
+
+        if (size >= table.length * LOAD_FACTOR) {
+            expand();
+        }
+        return true;
+    }
+
+
+    @Override
     public boolean addAll(Collection<? extends E> c) {
-        return false;
+        boolean modified = false;
+
+        for(E e : c){
+            if(add(e)){
+                modified = true;
+            }
+        }
+
+        return modified;
     }
 
     @Override
@@ -94,21 +125,24 @@ public class MyHashSet<E> implements Set<E> {
         Iterator<E> itr = table[index].iterator();
 
         while(itr.hasNext()) {
+            E element = itr.next();
 
             //check for existing elements
             // case 1: both null
-            if (o == null && itr.next() == null) {
+            boolean areBothNull = o == null && element == null;
+            boolean isNonNullAndEqual = o != null && o.equals(element);
+            if (areBothNull || isNonNullAndEqual) {
                 itr.remove();
                 size--;
                 return true;
             }
 
             // case 2: o non-null and equal
-            if (o != null && o.equals(itr.next())) {
-                itr.remove();
-                size--;
-                return true;
-            }
+//            if (o != null && o.equals(element)) {
+//                itr.remove();
+//                size--;
+//                return true;
+//            }
         }
         return false;
     }
@@ -116,7 +150,16 @@ public class MyHashSet<E> implements Set<E> {
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+
+        boolean modified = false;
+
+        for(Object o : c){
+            if(remove(o)){
+                modified = true;
+            }
+        }
+
+        return modified;
     }
 
 
@@ -128,25 +171,33 @@ public class MyHashSet<E> implements Set<E> {
             return false;
         }
 
-        for (E element : table[index]) {
+        return table[index].contains(o);
 
-            //check for existing elements
-            // case 1: both null
-            if (o == null && element == null) {
-                return true;
-            }
-
-            // case 2: o non-null and equal
-            if (o != null && o.equals(element)) {
-                return true;
-            }
-        }
-        return false;
+//        for (E element : table[index]) {
+//
+//            //check for existing elements
+//            // case 1: both null
+//            if (o == null && element == null) {
+//                return true;
+//            }
+//
+//            // case 2: o non-null and equal
+//            if (o != null && o.equals(element)) {
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        for(Object o : c){
+            if(!contains(o)){
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -160,6 +211,7 @@ public class MyHashSet<E> implements Set<E> {
 
     @Override
     public boolean retainAll(Collection<?> c) {
+       // iterator  hasNext  equalse next or remove
         return false;
     }
 
