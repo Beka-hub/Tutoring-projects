@@ -15,17 +15,26 @@ public class MyHashSet<E> implements Set<E> {
     //represents the length of aray
     private int length;
 
-    //real HashSet dont initialize buckets right away
-    //it initialize them as needed to save memory
     public MyHashSet(){
         table = new LinkedList[defaultLength];
         length = defaultLength;
         size = 0;
+    }
 
-        //buckets
-        for(int i = 0; i< length; i++){
-            table[i] = new LinkedList<>();
-        }
+    private int findIndex(Object o){
+        //not safe with negative hashCode(); //kadyr
+        //int hashCode = (e == null)? 0 : e.hashCode();
+        //int index = hashCode % length;
+
+        // safe with negative hashCode //chatGPT
+        int hash = (o == null) ? 0 : o.hashCode();
+        int index = (hash & 0x7fffffff) % length;
+
+        return index;
+    }
+
+    private void initializeBuckets(int index){
+        table[index] = new LinkedList<>();
     }
 
     // here should be a method that expends array based on LoadFactor
@@ -38,16 +47,13 @@ public class MyHashSet<E> implements Set<E> {
             //expand();
         }
 
-        int hashCode = 0;
+        int index = findIndex(e);
 
-        //null always be at index 0;
-        // null != null -> hashCode = 0;
-        // e != null -> e.hashCode();
-        if (e != null){
-            hashCode = e.hashCode();
+
+        //initialize table[index] as needed
+        if(table[index] == null){
+            initializeBuckets(index);
         }
-
-        int index = hashCode % length;
 
         //check for existing elements
         if (table[index].contains(e)) {
@@ -76,29 +82,39 @@ public class MyHashSet<E> implements Set<E> {
         return false;
     }
 
-    // check for null buckets first
     @Override
     public boolean remove(Object o) {
 
-        int hashCode = 0;
+        int index = findIndex(o);
+        LinkedList<E> bucket = table[index];
 
-        //null always be at index 0;
-        // null != null -> hashCode = 0;
-        // e != null -> e.hashCode();
-        if (o != null){
-            hashCode = o.hashCode();
+        if (bucket == null) {
+            return false;
         }
 
-        int index = hashCode % length;
+        Iterator<E> it = bucket.iterator();
 
-        //check for existing elements
-        if (table[index].remove(o)) {
-            size--;
-            return true;
-        }
+        while (it.hasNext()) {
+            E element = it.next();
+
+            // case 1: both null
+            if (o == null && element == null) {
+                it.remove();
+                size--;
+                return true;
+            }
+
+            // case 2: both non-null and equal
+            if (o != null && o.equals(element)) {
+                    it.remove();
+                    size--;
+                    return true;
+                }
+            }
 
         return false;
     }
+
 
     @Override
     public boolean removeAll(Collection<?> c) {
