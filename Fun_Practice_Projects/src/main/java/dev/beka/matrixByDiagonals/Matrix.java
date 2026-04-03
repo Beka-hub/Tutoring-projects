@@ -10,11 +10,11 @@ public class Matrix {
         this.array = array;
     }
 
-    public void sortMatrix() {
+    public int[][] sortMatrix() {
         myMap.clear();
 
-        if (array == null || array.length == 0) {
-            return;
+        if (array == null || array.length == 0 || array[0].length == 0) {
+            return array;
         }
 
         int rowLen = array.length;
@@ -53,13 +53,14 @@ public class Matrix {
                 array[row][col] = myMap.get(key).removeFirst();
             }
         }
+
+        return array;
     }
 
     public static void main(String[] args) {
 
         int[][] array = {{1, 2, 3, 1}, {4, 5, 6, 1}, {7, 8, 9, 1}, {1, 1, 1, 1}};
         Matrix matrix = new Matrix(array);
-
         matrix.sortMatrix();
 
         int rowLen = array.length;
